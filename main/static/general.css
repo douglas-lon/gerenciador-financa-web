@@ -1,0 +1,133 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: pink;
+}
+
+main {
+    height: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+#navBar {
+    vertical-align: middle;
+    margin-top: 0;
+    text-align: center;
+    min-height: 24px;
+    height: 40px;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+#ulNav {
+    display: flex;
+    height: 100%;
+    margin: 0;
+    align-items: center;
+    justify-content: center
+}
+
+#liNav {
+    margin-left: 5px;
+    margin-right: 5px;
+    display: inline;
+}
+
+#liNav:hover {
+    background-color: #04AA6D;
+    color: white;
+}
+
+.icon {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    #navBar #ulNav #liNav:not(:first-child) {display: none;}
+    #navBar #ulNav #liNav.icon {
+      float: right;
+      display: block;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #navBar.responsive {position: relative;}
+    #navBar.responsive  #ulNav #liNav.icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    #navBar.responsive  #ulNav #liNav {
+      float: none;
+      display: block;
+      text-align: left;
+    }
+}
+
+#divHome {
+    margin: 0;
+    background-color: black;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#listaHome {
+    padding: 10%;
+    margin: 10%;
+    background-color: white;
+    list-style-type: none;
+    border-radius: 15px;
+}
+
+.itemsHome {
+    font-size: xx-large;
+    text-align: center;
+    padding: 2%;
+    text-decoration: none;
+    box-shadow: 5px 5px 5px black;
+    border-width: 0px;
+    border-radius: 15px;
+}
+
+.globalContainer {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    padding: 0 5% 0 5%;
+    margin: 0;
+    background-color: cyan;
+    display: flex;
+    flex-direction: column;
+    height: 70%;
+    width: max-content;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 15px;
+}
+
+.historico {
+    display: flex;
+    overflow-y: auto;
+    min-width: max-content;
+    height: 50%;
+    align-self: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+table {
+    overflow-x: scroll;
+}
+
+

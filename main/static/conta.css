@@ -1,0 +1,86 @@
+@charset "UTF-8";
+
+.form-container {
+    display: none;
+    position: fixed;
+    margin: auto;
+    width: 75%;
+    top: 33%;
+    text-align: center;
+    
+}
+
+.form-popup {
+    display: inline-block;
+    background-color: white;
+    max-width: 400px;
+    padding: 10px;
+    box-shadow: 5px 5px 5px black;
+    border-radius: 3px;
+}
+
+#pagarF {
+    display: inline-block;
+    background-color: white;
+    max-width: 400px;
+    padding: 10px;
+    box-shadow: 5px 5px 5px black;
+    border-radius: 3px;
+    
+}
+
+#pagar-form-container {
+    display: none;
+    position: fixed;
+    margin: auto;
+    width: 75%;
+    top: 33%;
+    text-align: center;
+    
+}
+
+#movimentacao {
+    display: none;
+}
+
+#debitos {
+    display: none;
+}
+
+#pendencia-form-container {
+    display: none;
+    position: fixed;
+    margin: auto;
+    width: 100%;
+    top: 33%;
+    text-align: center;
+    
+}
+
+#pendenciaF {
+    display: inline-block;
+    background-color: white;
+    max-width: 400px;
+    padding: 10px;
+    box-shadow: 5px 5px 5px black;
+    border-radius: 3px;
+    
+}
+
+#pagarAllContainer {
+    display: none;
+    position: fixed;
+    margin: auto;
+    width: 75%;
+    top: 33%;
+    text-align: center;
+}
+
+#pagarAll {
+    display: inline-block;
+    background-color: white;
+    max-width: 400px;
+    padding: 10px;
+    box-shadow: 5px 5px 5px black;
+    border-radius: 3px;
+}

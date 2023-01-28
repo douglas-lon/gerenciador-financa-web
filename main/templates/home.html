@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock title %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+
+{% block content %}
+    <div class=" m-5 p-5 align-middle d-flex align-items-center flex-column justify-content-center" id="divHome">
+        <div class="w-50 m-5 pt-5 list-group text-center " id="listaHome">
+            <a class=" list-group-item list-group-item-action bg-dark text-light" href="/conta"> Conta </a>
+            <a  class="list-group-item list-group-item-action bg-dark text-light" href="/debitos"> Débitos </a>
+            <a  class="list-group-item list-group-item-action bg-dark text-light" href="/resumo"> Resumo </a>
+            <a  class="list-group-item list-group-item-action bg-dark text-light" href="/historico"> Histórico </a>
+            <a  class="list-group-item list-group-item-action bg-dark text-light" href="/pendencias"> Pendências </a>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block style %}
+    <link rel="stylesheet" href="../static/conta.css">
+{% endblock style %}
+
+
+{% block title %}
+    Histórico
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="container-fluid">
+            <button onclick="showMov()" class="fw-bold mt-3 w-100 btn btn-dark rounded-0"> Histórico de Movimentações </button>
+            <div id="movimentacao">
+                <table class="table table-sm table-hover">
+                    <tr class="table-dark">
+                        <th>Data Adicionada</th>
+                        <th> Data de Criação </th>
+                        <th> Detalhe </th>
+                        <th> Valor </th>
+                        <th> Conta </th>
+                    </tr>
+                    {% for m in hM %}
+                        <tr>
+                            <td>{{m.data_adicionada.strftime("%d/%m/%y")}}</td>
+                            <td> {{m.data.strftime("%d/%m/%y")}} </td>
+                            <td>{{m.detalhe}} </td>
+                            <td> {{m.valor}} </td>
+                            <td> {{m.conta}} </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <br>
+        <div class="container-fluid">
+            <button onclick="showDeb()" class="mt-3 w-100 btn btn-dark rounded-0 fw-bold"> Histórico de Débitos </button>
+            <div id="debitos">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <tr class="table-dark">
+                            <th>Data Adicionada</th>
+                            <th>Dono</th>
+                            <th>Detalhe</th>
+                            <th>Data</th>
+                            <th>Parcelas</th>
+                            <th>Valor Parcela</th>
+                            <th> Total Movimentado </th>
+                        </tr>
+                        {% for d in hD %}
+                            <tr>
+                                <td>{{d.data_adicionada.strftime("%d/%m/%y")}}</td>
+                                <td>{{d.dono}}</td>
+                                <td> {{d.detalhe}}</td>
+                                <td> {{d.data.strftime("%d/%m/%y")}}</td>
+                                <td>{{d.parcelas_pagas}}</td>
+                                <td> {{d.valor_parcela}}</td>
+                                <td>{{'%0.2f'| format(d.total_falta | float)}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        const divMov = document.getElementById('movimentacao')
+        const divDeb = document.getElementById('debitos')
+        let btnMovControl = false
+        let btnDebControl = false
+
+        const showMov = () => {
+            btnMovControl = !btnMovControl
+
+            if (btnMovControl) {
+                divMov.style.display = 'block'
+            } else {
+                divMov.style.display = 'none'
+            }
+        }
+
+       const showDeb = () => {
+            btnDebControl = !btnDebControl
+
+            if (btnDebControl) {
+                divDeb.style.display = 'block'
+            } else {
+                divDeb.style.display = 'none'
+            }
+        }
+    </script>
+{% endblock script %}

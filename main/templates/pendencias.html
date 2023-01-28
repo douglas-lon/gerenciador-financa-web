@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block style %}
+    <link rel="stylesheet" href="../static/conta.css">
+{% endblock style %}
+
+
+{% block title %}
+    Pendências
+{% endblock title %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <tr class="table-dark">
+                    <th>Dono</th>
+                    <th>Detalhe</th>
+                    <th>Valor</th>
+                    <th></th>
+                </tr>
+                {% for pen in pendencias %}
+                    <tr>
+                        <td>{{pen.dono}}</td>
+                        <td>{{pen.detalhe}}</td>
+                        <td>{{pen.valor}}</td>
+                        <td>
+                            <form action="{{url_for('excluir_pendencia', id=pen.id)}}" method="post" onsubmit="return confirm('Clique em OK para apagar!')">
+                                <button class="btn btn-dark btn-sm" type="submit" name="excluir" value="excluir">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <button class="btn btn-dark" onclick="openForm(clear=true)" type="button"> Adicionar Pendencia</button>
+    </div>
+    <div id="pendencia-form-container">
+        <form id="pendenciaF" action="/pendencias/" method="post" autocomplete="off">
+            <div>
+                <label for="dono"> Dono: </label>
+                <input name="dono" id="dono" type="text" autocomplete="off">
+            </div>
+
+            <div>
+                <label for="detalhe"> Detalhe: </label>
+                <input name="detalhe" id="detalhe" type="text" autocomplete="off">
+            </div>
+
+            <div>
+                <label for="valor"> Valor: </label>
+                <input name="valor" id="valor" type="text" autocomplete="off">
+            </div>
+
+            <button type="submit" > Adicionar </button>
+            <button onclick="closeForm()" type="button"> Fechar </button>
+        </form>
+    </div>
+    
+{% endblock content %}
+
+{% block script %}
+    <script>
+        mForm = document.getElementById('pendencia-form-container')
+        dono = document.getElementById('dono')
+        detalhe = document.getElementById('detalhe')
+        valor = document.getElementById('valor')
+
+        const openForm = (clear=false) => {
+            if (clear) clearForm()
+
+            mForm.style.display = 'block'
+        }
+
+        const closeForm = () => {
+            mForm.style.display = 'none'
+        }
+
+        const clearForm = () => {
+            
+            dono.value = ''
+            detalhe.value = ''
+            valor.value = ''
+        }
+    </script>
+{% endblock script %}

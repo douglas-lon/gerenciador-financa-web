@@ -1,0 +1,366 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Débitos {{categoria.nome}}
+{% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="../static/conta.css">
+{% endblock style %}
+
+
+{% block content %}
+    <div class="container">
+        
+        <div class="d-flex gap-4 container-fluid">
+            {% if form.errors %}
+                <span style="display: none;" id="myS"></span>
+            {% endif %}
+            {% set total = namespace(value=0) %}
+            {% set totalMes = namespace(value=0) %}
+            {% for debito in lista_debitos %}
+                {% set total.value = total.value + (((debito.valor_parcela | float) * debito.parcelas_falta) | float) %}
+                {% set totalMes.value = totalMes.value + (debito.valor_parcela | float) %}
+            {% endfor %}
+            <div>
+                <h1> Total em {{categoria.nome}} </h1>
+                <p class="ms-2 fs-3 text"> {{'%0.2f' | format(total.value)}} </p>
+            </div>
+            <div>
+                <h1>Total Por Mês:</h1>
+                <p class="ms-2 fs-3 text"> {{'%0.2f' | format(totalMes.value)}}</p>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <tr class="table-dark">
+                        <th>Dono</th>
+                        <th>Detalhe</th>
+                        <th>Data</th>
+                        <th>Parcelas</th>
+                        <th>Parcelas Faltam </th>
+                        <th>Valor Parcela</th>
+                        <th>Total</th>
+                        <th> Total Falta</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% if lista_debitos %}
+                        {% for debito in lista_debitos %}
+                            <tr>
+                                <td class="{{debito.id}}">{{debito.dono}}</td>
+                                <td class="{{debito.id}}"> {{debito.detalhe}}</td>
+                                <td class="{{debito.id}}"> {{debito.data.strftime("%d/%m/%y")}}</td>
+                                <td class="{{debito.id}}">{{debito.parcelas}}</td>
+                                <td class="{{debito.id}}">{{ debito.parcelas_falta }}</td>
+                                <td class="{{debito.id}}"> {{debito.valor_parcela}}</td>
+                                <td class="{{debito.id}}">{{'%0.2f' | format(debito.parcelas * (debito.valor_parcela | float))}}</td>
+                                <td class="{{debito.id}}">{{'%0.2f'| format(debito.total | float)}}</td>
+                                <td id="d" style="display: none;"> {{debito.data.strftime('%Y-%m-%d')}} </td>
+                                <td><button class="btn btn-dark btn-sm" onclick="editForm(id='{{debito.id}}', nome='{{categoria.nome}}')" type="button">Editar</button></td>
+                                <td><button class="btn btn-dark btn-sm" onclick="openPayForm(id='{{debito.id}}', qtd='{{debito.parcelas_falta}}', valorParcela='{{debito.valor_parcela}}', detalhes='{{debito.detalhe}}')">Pagar</button></td>
+                                <td>
+                                    <form action="{{url_for('excluir_cd', what='debito', id=debito.id, nome=categoria.nome) }}" method="post" onsubmit="return confirm('Clique em OK para apagar!')">
+                                        <button class="btn btn-dark btn-sm" type="submit" name="excluir" value="excluir">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+
+            <div class="d-flex">
+                <button class="m-2 btn btn-dark" onclick="openForm(clear=true)">Adicionar Débito</button>
+                <button class="m-2 btn btn-dark" style="display: block;" onclick="abrirForm()" type="button" > Pagar Mês</button>
+                <form method="post" action="{{url_for('excluir_cd', what='categoria', id=categoria.id)}}" onsubmit="return confirm('Clique em OK para apagar!')">
+                    <button class="m-2 btn btn-dark" type="submit" > Excluir Esta Categoria </button>
+                </form>
+            </div>
+        </div>
+        <div class="form-container" id="myForm" autocomplete="off">
+            <form id="myFormP" name="myFormP" class="form-popup  text-start border border-dark rounded"  action="" method="POST">
+                {{ form.hidden_tag() }}
+                <fieldset>
+                        <legend class="fw-bold"> Adicionar Débito </legend>
+                        <div class="d-flex align-items-center">
+                            {{ form.dono.label(class_='p-1') }}
+                            {% if form.dono.errors %}
+                                {{ form.dono(autocomplete="off", class_='form-control p-1')}}
+                                <div>
+                                    {% for error in form.dono.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.dono(autocomplete="off", class_='form-control p-1') }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            {{ form.data.label(class_='p-1') }}
+                            {% if form.data.errors %}
+                                {{ form.data(autocomplete="off",  class_='form-control p-1')}}
+                                <div>
+                                    {% for error in form.data.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.data(autocomplete="off",  class_='form-control p-1') }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            {{ form.detalhe.label(class_='p-1') }}
+                            {% if form.detalhe.errors %}
+                                {{ form.detalhe(autocomplete="off", class_='form-control p-1')}}
+                                <div>
+                                    {% for error in form.detalhe.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.detalhe(autocomplete="off", class_='form-control p-1') }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex">
+                            {{ form.parcelas.label(class_='p-1') }}
+                            {% if form.parcelas.errors %}
+                                {{ form.parcelas(autocomplete="off", class_='form-control p-1')}}
+                                <div>
+                                    {% for error in form.parcelas.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.parcelas(autocomplete="off", class_='form-control p-1') }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            {{ form.valor_parcela.label(class_='p-1') }}
+                            {% if form.valor_parcela.errors %}
+                                {{ form.valor_parcela(autocomplete="off", class_='form-control p-1')}}
+                                <div>
+                                    {% for error in form.valor_parcela.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.valor_parcela(autocomplete="off", class_='form-control p-1') }}
+                            {% endif %}
+                        </div>
+                </fieldset>
+                <div class="d-flex justify-content-end">
+                    {{ form.submit(class_='m-2 btn btn-dark btn-sm') }}
+                    <button class="m-2 btn btn-dark btn-sm" type="button" onclick="closeForm()" > Fechar </button>
+                </div>
+            </form>
+        </div>
+        <div id="pagar-form-container">
+            <form class=" text-start border border-dark rounded" name="pagarF" id="pagarF" action="/pagar_d?nome={{categoria.nome}}" method="post">
+                <legend class="fw-bold">Pagar</legend>
+                <div class="d-flex align-items-center">
+                    <label class="p-1" for="qtdParcelas"> Parcelas: </label>
+                    <select class="form-select p-1" name="qtdParcelas" id="qtdParcelas">
+                    </select>
+                </div>
+                <input hidden name="idDebito" id="idDebito" readonly type="text">
+                <input hidden name="detalhes" id="detalhes" readonly type="text">
+                <div class="d-flex align-items-center">
+                    <label class="p-1" for="totalP">Total: </label>
+                    <input class=" p-1 form-control" name="totalPI" id="totalPI" disabled type="text">
+                </div>
+                <div class="ms-1 d-flex align-items-center">
+                    <input class="form-check-input p-1" type="checkbox" id="usarConta" name="usarConta">
+                    <label class="p-1" for="usarConta">Usar Conta?</label>
+                </div>
+                <div id="selectConta" style="display: none;">
+                    <div class="d-flex align-items-center">
+                        <label class="p-1" for="contas"> Conta: </label>
+                        <select class="form-select p-1" name="contas" id="contas">
+                            {% for conta in lista_contas %}
+                                <option value="{{conta.id}}"> {{conta.nome}}: {{conta.total}} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="m-2 btn btn-dark btn-sm" id="pagar" type="submit"> Pagar </button>
+                    <button class="m-2 btn btn-dark btn-sm" type="button" onclick="closePayForm()" > Fechar </button>
+                </div>
+            </form>
+        </div>
+        
+        <div id="pagarAllContainer">
+            <form class="text-start border border-dark rounded" id="pagarAll" method="post" action="{{url_for('pagar_all', id=categoria.id)}}" onsubmit="return confirm('Clique em OK para Pagar!')">
+                <legend class="fw-bold"> Pagar Mês</legend>
+                <div class="d-flex align-items-center">
+                    <span class="p-1">Total:</span>
+                    <input class="p-1 form-control" value="{{totalMes.value}}" disabled type="text"> </input>
+                </div>
+                <div>
+                    <div class="ms-1 d-flex align-items-center">
+                        <input class="form-check-input p-1s" type="checkbox" id="usarContaAll" name="usarContaAll">
+                        <label class="p-1" for="usarContaAll">Usar Conta?</label>
+                    </div>
+                    <div id="selectContaAll" style="display: none;">
+                        <div class="d-flex align-items-center">
+                            <label class="p-1" for="contas"> Conta: </label>
+                            <select class="form-select p-1" name="contas" id="contas">
+                                {% for conta in lista_contas %}
+                                    <option value="{{conta.id}}"> {{conta.nome}}: {{conta.total}} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="m-2 btn btn-dark btn-sm" type="submit" > Pagar </button>
+                    <button class="m-2 btn btn-dark btn-sm"  onclick="fecharForm()" type="button"> Fechar </button>
+                </div>
+            </form>
+        </div>
+        
+        
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        //const dono = document.getElementById('dono')
+        const dono = document.querySelector('#dono')
+        const data = document.querySelector('#data')
+        const detalhe = document.querySelector('#detalhe')
+        //const parcelas = document.getElementById('parcelas')
+        const parcelas = document.querySelector('#parcelas')
+        const valor_parcela = document.querySelector('#valor_parcela')
+        const mForm = document.querySelector('#myForm')
+
+        const openForm = (clear=false) => {
+            if (clear) clearForm()
+
+            mForm.style.display = 'block'
+        }
+
+        const payOne = () => {
+
+        }
+
+        const closeForm = () => {
+            mForm.style.display = 'none'
+            document.getElementById('myFormP').onsubmit = () => {
+                document.myFormP.action = ''
+            }
+        }
+
+        
+        const clearForm = () => {
+            
+            dono.value = ''
+            data.value = ''
+            detalhe.value = ''
+            parcelas.value = ''
+            valor_parcela.value = ''
+        }
+
+        document.getElementById('myForm').addEventListener('onload', clearForm())
+        let s = document.getElementById('myS')
+        if (s) {
+            s.addEventListener('onload', openForm())
+        }
+
+        
+        const editForm = (id, nome_d) => {
+            nome = nome_d
+            all = document.getElementsByClassName(id)
+
+            data.value = document.getElementById('d').textContent.trim()
+
+            dono.value = all[0].textContent.trim()
+            detalhe.value = all[1].textContent.trim()
+            parcelas.value = all[3].textContent.trim()
+            
+            valor_parcela.value = all[5].textContent.trim()
+
+            document.getElementById('myFormP').onsubmit = () => {
+                document.myFormP.action = `/att_d?nome=${nome}&id=${id}&data=${data.value}&detalhe=${detalhe.value}&valor_parcela=${valor_parcela.value}&dono=${dono.value}&parcelas=${parcelas.value}`
+            }
+            
+            openForm()
+            
+            
+        }
+
+        const form = document.getElementById('pagarF')
+        const options = document.getElementById('qtdParcelas')
+        const pagarBtn = document.getElementById('pagar')
+        const usarCheck = document.getElementById('usarConta')
+        const inputP = document.getElementById('totalPI')
+
+        options.onchange = ()=>{
+                inputP.value = (parseInt(options.value) * parseFloat(valorParcela)).toFixed(2)
+                if (inputP.value == 0) {
+                    pagarBtn.disabled = true
+                } else {
+                    pagarBtn.disabled = false
+                }
+            }
+        
+        usarCheck.onchange = () => {
+            let contaContainer = document.getElementById('selectConta')
+            if (usarCheck.checked) {
+                contaContainer.style.display = 'block'
+                let lista = ''
+                console.log(lista)
+            } else {
+                contaContainer.style.display = 'none'
+            }
+        } 
+
+        const usarContaAll = document.getElementById('usarContaAll')
+        usarContaAll.onchange = () => {
+            let contaContainer = document.getElementById('selectContaAll')
+            if (usarContaAll.checked) {
+                contaContainer.style.display = 'block'
+                let lista = ''
+                console.log(lista)
+            } else {
+                contaContainer.style.display = 'none'
+            }
+        }
+
+        const openPayForm = (id, qtd, valorParcela, detalhes) => {
+            document.getElementById('pagar-form-container').style.display = 'block'
+            document.getElementById('idDebito').value = id
+            document.getElementById('detalhes').value = detalhes
+            pagarBtn.disabled = true
+            options.innerHTML = ''
+            let p = document.createElement('option')
+            p.value = 0
+            p.textContent = 'Escolha aqui'
+            p.selected = 'selected'
+            options.appendChild(p)
+            inputP.value = (parseInt(options.value) * parseFloat(valorParcela)).toFixed(2)
+            for (let i=1; i<= qtd; i++) {
+                op = document.createElement('option')
+                op.value = i
+                op.textContent = i
+                options.appendChild(op)
+            }
+
+
+        }
+
+        const abrirForm = () => {
+            document.getElementById('pagarAllContainer').style.display = 'block'
+        }
+
+        const fecharForm = () => {
+            document.getElementById('pagarAllContainer').style.display = 'none'
+        }
+
+        const closePayForm = () => document.getElementById('pagar-form-container').style.display = 'none'
+        
+    </script>
+{% endblock script %}

@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Conta {{conta.nome}}
+{% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="../static/conta.css">
+{% endblock style %}
+
+{% block content %}
+    <div class="container" >
+        <div class="container-fluid">
+            <h1 id="cNome">
+                {{conta.nome}}
+            </h1>
+            {% if form.errors %}
+                <span style="display: none;" id="myS"></span>
+            {% endif %}
+            {% set total = namespace(value=0) %}
+            {% for movimentacao in lista_movimentacao %}
+                {% set total.value = total.value + (movimentacao.valor | float) %}
+            {% endfor %}
+            <p class="ms-1 fs-3 text"> {{total.value}} </p>
+        </div>
+
+        <div class="container-fluid">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <tr class="table-dark">
+                        <th> Data </th>
+                        <th> Detalhe </th>
+                        <th> Valor </th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% for movimentacao in lista_movimentacao %}
+                    <tr>
+                        <td class="{{movimentacao.id}}"> {{movimentacao.data.strftime("%d/%m/%y")}} </td>
+                        <td class="{{movimentacao.id}}"> {{movimentacao.detalhe}}  </td>
+                        <td class="{{movimentacao.id}}"> {{movimentacao.valor}}</td>
+                        <td id="d" style="display: none;"> {{movimentacao.data.strftime('%Y-%m-%d')}} </td>
+                
+                        <td> <button class="btn btn-dark btn-sm" onclick="editForm('{{ movimentacao.id}}')" type="button"> Editar </button> </td>
+                        <td>
+                            <form action="{{url_for('excluir_cm', what='movimentacao', id=movimentacao.id, nome=conta.nome) }}" method="post" onsubmit="return confirm('Clique em OK para apagar!')">
+                                <button class="btn btn-dark btn-sm" type="submit" name="excluir" value="excluir">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <button class="m-2 btn btn-dark d-inline-block" type="button" onclick="openForm(clear=true)"> Adicionar Movimentação </button>
+            <form class="d-inline-block" method="post" action="{{url_for('excluir_cm', what='conta', id=conta.id)}}" onsubmit="return confirm('Clique em OK para apagar!')">
+                <button class=" m-2 btn btn-dark " type="submit" > Excluir Esta Conta </button>
+            </form>
+        </div>
+        <div class="form-container " id="myForm" autocomplete="off">
+            <form id="myFormP" name="myFormP" class="form-popup text-start border border-dark rounded"  action="" method="POST">
+                {{ form.hidden_tag() }}
+                <fieldset>
+                        <legend class="fw-bold"> Adicionar Movimentação </legend>
+                        <div class="d-flex align-items-center">
+                            {{ form.data.label(class_='p-1') }}
+                            {% if form.data.errors %}
+                                {{ form.data(autocomplete="off", class_='p-1 form-control')}}
+                                <div>
+                                    {% for error in form.data.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.data(autocomplete="off", class_='p-1 form-control') }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            {{ form.detalhe.label(class_='p-1') }}
+                            {% if form.detalhe.errors %}
+                                {{ form.detalhe(autocomplete="off", class_='p-1 form-control')}}
+                                <div>
+                                    {% for error in form.detalhe.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.detalhe(autocomplete="off", class_='p-1 form-control') }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            {{ form.valor.label(class_='p-1') }}
+                            {% if form.valor.errors %}
+                                {{ form.valor(autocomplete="off", class_='p-1 form-control')}}
+                                <div>
+                                    {% for error in form.valor.errors %}
+                                        <span> {{ error }} </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.valor(autocomplete="off", class_='p-1 form-control') }}
+                            {% endif %}
+                        </div>
+                </fieldset>
+                <div class="d-flex justify-content-end">
+                    {{ form.submit(class_='btn btn-dark btn-sm m-2') }}
+                    <button class="m-2 btn btn-dark btn-sm" type="button" onclick="closeForm()" > Fechar </button>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        const data = document.getElementById('data')
+        const detalhe = document.getElementById('detalhe')
+        const valor = document.getElementById('valor')
+        const mForm = document.getElementById('myForm')
+
+        const openForm = (clear=false) => {
+            if (clear) clearForm()
+            mForm.style.display = 'block'
+        }
+        const closeForm = () => {
+            mForm.style.display = 'none'
+            document.getElementById('myFormP').onsubmit = () => {
+                document.myFormP.action = ''
+            }
+        }
+
+        
+        const clearForm = () => {
+            data.value = ''
+            detalhe.value = ''
+            valor.value = ''
+        }
+
+        document.getElementById('myForm').addEventListener('onload', clearForm())
+        let s = document.getElementById('myS')
+        if (s) {
+            s.addEventListener('onload', openForm())
+        }
+
+        const editForm = (id) => {
+            nome = document.getElementById('cNome').textContent
+            all = document.getElementsByClassName(id)
+            data.value = document.getElementById('d').textContent.trim()
+            detalhe.value = all[1].textContent.trim()
+            valor.value = all[2].textContent.trim()
+            document.getElementById('myFormP').onsubmit = () => {
+                document.myFormP.action = `/att_m?nome=${nome}&id=${id}&data=${data.value}&detalhe=${detalhe.value}&valor=${valor.value}`
+            }
+            
+            openForm()
+            
+            
+        }
+        
+    </script>
+{% endblock script %}

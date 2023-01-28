@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Débitos
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="d-flex gap-4 container-fluid">
+            <div>
+                <h1>Total:</h1>
+                <p class="ms-2 fs-3 text">{{'%0.2f'| format( totals[0] | float)}}</p>
+            </div>
+            <div>
+                <h1>Total Por Mês:</h1>
+                <p class="ms-2 fs-3 text"> {{'%0.2f'| format( totals[1] | float)}}</p>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class=" table-responsive" id="categorias">
+                <table class="table table-sm">
+                    <tr class="table-dark">
+                        <th>Nome</th>
+                        <th>Total de débitos</th>
+                        <th></th>
+                    </tr>
+                    {% if lista_debitos %}
+                        {% for debito in lista_debitos %}
+                            <tr>
+                                <td>{{debito.nome}}</td>
+                                {% if debitos_conta %}
+                                    <td> {{'%0.2f'| format(debitos_conta[loop.index0] | float)}} </td>
+                                {% else %}
+                                    <td> 0 </td>
+                                {% endif %}
+            
+                                <td><a href="/categoria_debito?nome={{debito.nome}}"><button class="btn btn-dark">Editar</button></a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+            
+            <form id="debitoForm" action="" method="post">
+                <input name="hINP" id="hiddenip" hidden="" type="text">
+            </form>
+            <button class="btn btn-dark" type="button" id="myB"> Criar nova Categoria de Débito </button>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        let name = ''
+        const inp = document.getElementById('hiddenip')
+        const btn = document.getElementById('myB')
+
+        btn.onclick = (e) => {
+            e.preventDefault()
+            
+            name = window.prompt('Digite o nome da Categoria de Débito para ser criada: ')
+            if (name == null || name.trim() == '') {
+                alert("Precisa escrever um nome")
+            } else if (name.length >= 1) {
+                inp.value = name
+                document.getElementById("debitoForm").submit()
+            }
+        }
+        
+
+    </script>
+{% endblock script %}

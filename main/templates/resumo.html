@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Resumo
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="container-fluid">
+        <div class="w-75 mt-3 p-3 d-flex flex-column border border-dark rounded">
+            <h1> Conta </h1>
+            {% set total_m = namespace(value=0) %}
+            {% for mov in movimentacao %}
+                {% set total_m.value = total_m.value + mov.valor | float %}
+            {% endfor %}
+            <h2>Total: <span class="fw-normal fs-3 text">{{'%0.2f' | format(total_m.value)}}</span> </h2>
+        </div>
+        <div class="w-75 mt-3 p-3 d-flex flex-column border border-dark rounded">
+            <h1>Débitos</h1>
+            <select class="form-select" name="culpado" id="culpado">
+                <option value="Todos"> Todos </option>
+
+            </select>
+            <div>
+                <h2> Total: </h2>
+                <p class="totals mt-2 ms-1 fw-normal fs-4 text"> {{'%0.2f' | format(todos_debitos['Todos'][0])}} </p>
+            </div>
+            <div>
+                <h2>Total Por Mês:</h2>
+                <p class="totals mt-2 ms-1 fs-4 text"> {{'%0.2f' | format(todos_debitos['Todos'][1])}} </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    const culpado = document.getElementById('culpado')
+    const totals = document.getElementsByClassName('totals')
+    // @ts-ignore
+    const todos = {{ todos_debitos | tojson | safe}}
+    culpado.onchange = () => {
+        handleSelect(culpado.value, todos)
+    }
+
+    const handleSelect = (value, todos) => {
+
+        totals[0].textContent = todos[value][0].toFixed(2)
+        totals[1].textContent = todos[value][1].toFixed(2)
+    }
+</script>
+{% endblock script %}

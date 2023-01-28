@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Conta
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="container-fluid">
+            {% set total = namespace(value=0) %}
+            {% for valor in lista_total %}
+                {% set total.value = total.value + (valor | float) %}
+            {% endfor %}
+            <h1> Total no momento </h1>
+            <p class="fs-3 text ms-1"> {{total.value}} </p>
+        </div>
+        
+        <div class="container-fluid">
+            <div class="table-responsive" id="contas">
+                <table class="table table-sm table-hover">
+                    <tr class="table-dark">
+                        <th> Nome da Conta </th>
+                        <th> Total no momento</th>
+                        <th></th>
+                    </tr>
+                    {% if lista_contas %}
+                        {% for conta in lista_contas %}
+                            <tr>
+                                <td> {{conta.nome}} </td>
+                                <td> {{lista_total[loop.index0]}} </td>
+                                <td><a href="/conta_criada?nome={{conta.nome}}"><button class="btn btn-dark"> Editar</button> </a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+            
+            <form id="contaForm" action="" method="post">
+                <input name="hINP" id="hiddenip" hidden="" type="text">
+            </form>
+            <button class="btn btn-dark" type="button" id="myB"> Adicionar nova Conta </button>
+        </div>
+    </div>
+    
+    
+{% endblock content %}
+
+{% block script %}
+    <script>
+        let name = ''
+        const inp = document.getElementById('hiddenip')
+        const btn = document.getElementById('myB')
+
+        btn.onclick = (e) => {
+            e.preventDefault()
+            
+            name = window.prompt('Digite o nome da conta para ser criada: ')
+            if (name == null || name.trim() == '') {
+                alert("Precisa escrever um nome")
+            } else if (name.length >= 1) {
+                inp.value = name
+                document.getElementById("contaForm").submit()
+            }
+        }
+        
+
+    </script>
+{% endblock script %}
